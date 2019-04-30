@@ -3,8 +3,9 @@
 #### 1- functions to simulate first diagonal and likelyhoods ####
 
 low.sim <- function(mu,ndiag){
+  mu <- as.data.frame(mu)
   submu <- mu[mu$calendar>(t+1) & mu$calendar < (t+1) + ndiag + 1,]
-  #rownames(submu) <- 1:dim(submu)[1]
+  rownames(submu) <- 1:dim(submu)[1]
   values <- sapply(1:dim(submu)[1], function(p) rlnorm(1,.subset2(submu,3)[p],sqrt(.subset2(submu,5)[p])))
   submu$values <- values
   submu$lky <- dnorm(log(submu$values),submu$mu,sqrt(submu$sigma))
@@ -12,9 +13,21 @@ low.sim <- function(mu,ndiag){
   return(submu)
 } ##Simulate a trapezoid 
 
+### faster alternative to simulate a trapezoid
+low.sim.mat <- function(mu,ndiag){
+  mu_mat <- as.matrix(mu)
+  submu_mat <- mu_mat[mu_mat[,'calendar'] >(t+1) & mu_mat[,'calendar'] < (t+1) + ndiag + 1,]
+  submu_mat <- cbind(submu_mat,sqrt(submu_mat[,5]))
+  values <- rlnorm(dim(submu_mat)[1], submu_mat[,3],submu_mat[,6])
+  lky <- dnorm(log(values),submu_mat[,3],submu_mat[,6])
+  submu_mat <- cbind(submu_mat[,c(1,4)],values,lky)
+  return(as.data.frame(submu_mat))
+}
+
+
 ### compute the likelyhood of each trapezoid
 lkyhd <- function(rett,ndiag){
-  rett <- as.data.frame(rett)
+  #rett <- as.data.frame(rett)
   lky <- prod(rett[rett$calendar < (t+1) + ndiag +1,4])
   return(lky)
 } 

@@ -2,7 +2,7 @@ library(microbenchmark)
 library(tictoc)
 
 ########## Simulating the ultimate cost #############
-set.seed(22042019)
+set.seed(28042019)
 
 ### triangle dimension variables t x t triangle
 
