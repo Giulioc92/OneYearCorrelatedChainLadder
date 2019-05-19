@@ -14,7 +14,7 @@ transformed data{
   int n_dev = max(dev);
 }
 parameters{
-  real r_alpha[n_origin - 1];
+  real r_alpha[n_origin - 3];
   real <lower=-3,upper = 0> r_beta[n_dev - 1];
   real <lower=-0.9,upper=0.25> logelr[n_origin];
   //real<lower=0> a[n_dev];
@@ -78,22 +78,22 @@ model{
   logelr[4] ~ normal(-0.3055469, 0.002);
   logelr[5] ~ normal(-0.23390676, 0.001);
   logelr[6] ~ normal(-0.16347985, 0.001);
-  logelr[7] ~ normal(-0.37404598, 0.03);
-  logelr[8] ~ normal(-0.24823988, 0.03);
-  logelr[9] ~ normal(-0.36137167, 0.03);
-  logelr[10] ~ normal(-0.2989638, 0.04);
-  logelr[11] ~ normal(-0.43578292, 0.04);
+  logelr[7] ~ normal(-0.37404598, 0.05);
+  logelr[8] ~ normal(-0.24223988, 0.05);
+  logelr[9] ~ normal(-0.36137167, 0.05);
+  logelr[10] ~ normal(-0.31099901, 0.08);
+  logelr[11] ~ normal(-0.46203546, 0.08);
   
   
   r_alpha[1] ~ normal(0, 0.01);
   r_alpha[2] ~ normal(0, 0.02);
-  r_alpha[3] ~ normal(0, 0.02);
+  r_alpha[3] ~ normal(0, 0.03);
   
   for(i in 4:(n_origin - 3)){
     r_alpha[i] ~ normal(0,0.5);
   }
   r_beta ~ uniform(-3,0);
-  a ~ beta(1,4);
+  a ~ beta(1,6);
   rho ~ uniform(-1,1);
   
   for (i in 1:(len_data)){
