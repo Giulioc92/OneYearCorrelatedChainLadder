@@ -3,11 +3,11 @@
 
 ### to change the extract in fit_fast
 
-my_seed = 12052019
+my_seed = 190758
 tic()
 ########### fit the stan model
-ccl_posterior <- stan_model(file = 'ccl_uniform_logpriors.stan')
-########### get 10000 posterior sample
+ccl_posterior <- stan_model(file = 'ccl_normal_loglossratio_3.stan')
+########### get 10000 posterior sample  ### called here fit_fast for convenience
 
 fit <- sampling(ccl_posterior, data = stan_data, seed = my_seed, warmup = 5000, init = 'random', iter = 30000,
                 thin = 10, chains = 4, cores = 3, control = list(adapt_delta=.999, max_treedepth = 10))
@@ -17,11 +17,12 @@ toc()
 print(fit, pars = 'logloss', include = F)
 
 ###############
+my_seed = 123456
 tic()
-ccl_posterior <- stan_model(file = 'ccl_uniform_logpriors.stan')
-fit_fast <- sampling(ccl_posterior, data = stan_data, seed = my_seed, warmup = 2500, init = "random", iter = 7500,
-                     thin = 2, chains = 4, cores = 3, control = list(adapt_delta=.99, max_treedepth = 10))
-print(fit_fast, pars = c('mu','alpha', 'a', 'lp__'), include = F)
+ccl_posterior <- stan_model(file = 'ccl_normal_loglossratio_3.stan')
+fit <- sampling(ccl_posterior, data = stan_data, seed = my_seed, warmup = 1000, init = "random", iter = 6000,
+                     thin = 2, chains = 4, cores = 3, control = list(adapt_delta=.9, max_treedepth = 12))
+print(fit, pars = c('mu', 'a', 'lp__'), include = F)
 toc()
 ###############
 traceplot(fit, 'alpha')
