@@ -53,7 +53,7 @@ mack <- MackChainLadder(tri, est.sigma = 'Mack') %>% summary
 mack_lr <- (mack$ByOrigin$Ultimate / unique(data$premiums)) %>% cbind(origin = 1:t) %>%  as.data.frame
 colnames(mack_lr)[1] <- 'lr'
 #### get some kind of credibility of Mack LR
-
+options(digits = 8)
 mack_lr$dev_to_date <- mack$ByOrigin$Dev.To.Date %>%  unlist
 ### get the diagonal
 mack_lr$latest <- mack$ByOrigin$Latest %>% unlist
@@ -65,50 +65,63 @@ mack_lr
 
   #### benchmark to mix with prior information about loss ratio
 
-#### A uniform distribution is chosen for prior loss ratio
-#### I set extremes for loss ratio bands, based on my prior knowledge
-#### there could be studied a relationship between the dev_to_date and prior variance
+#### A normal distribution is chosen for prior loss ratio
+#### I decide to set a mean value for the prior loss ratio,based on my evaluations
+#### there could be studied a relationship between the dev_to_date and prior st dev
 
-lr_bounds <- matrix(0,nrow = t,ncol = 2)
-lr_bounds[2,] <- c(0.7381,0.7382)
-lr_bounds[3,] <- c(0.7178,0.7181)
-####almost untouched, not real variation on the final loss ratio
+#### I calculate the average loss ratio implied by this triangle
 
-lr_bounds[4,] <- c(.728,.732)
-lr_bounds[5,] <- c(.77, .79)
-lr_bounds[6,] <- c(.825,.87)
-lr_bounds[7,] <- c(.66,.73)
-lr_bounds[8,] <- c(.75,.80)
-lr_bounds[9,] <- c(.66,.75)
-lr_bounds[10,] <- c(.67,.75)
+(mean_lossratio <- mack_lr$lr %>% mean)
 
-### 
-###
-### 
+lr_priors <- mack_lr  %>% mutate(ibnr = ultimate - latest,lr_to_be_paid = (lr-lr_paid)/lr) %>% 
+  select(ultimate,latest,ibnr,lr_paid,lr,lr_to_be_paid)
+lr_priors$prior_lr <- 0 
+  
+lr_priors[2,7] <- lr_priors[2,5]
+lr_priors[3,7] <- lr_priors[3,5]
+#### untouched, we trust Mack, not real variation on the final loss ratio
+#### The idea is to trust less and less Mack implied loss ratio and more our
+#### external knowledge
+#### the more is left to pay the more we make room for uncertainty
 
-lr_bounds[11,] <- c(.58,.68)
+lr_priors[4,7] <- lr_priors[4,5] * (1.03)
+lr_priors[5,7] <- lr_priors[5,5] * (1.03)
+lr_priors[6,7] <- lr_priors[6,5] * (1.02)
+lr_priors[7,7] <- lr_priors[7,5] * (1.02)
+lr_priors[8,7] <- lr_priors[8,5] * (1.02)
+lr_priors[9,7] <- lr_priors[9,5] * (1.02)
 
+#### particular care for the two youngest generations
+#### implied loss ratio are lower than long-term loss ratio of the portfolio
+#### I converge to that value
+lr_priors[10,7] <- mean_lossratio * 1.02
 
 ### the last loss ratio in particular seems not to
 ### be in line with that ot immediately preceding generations:
 ### great uncertainty and considerably lower loss ratios
-### make us choose a wide prior, centered on higher values than the mack ones
+### make us choose a wider prior, centered on higher values than the mack ones
+lr_priors[11,7] <- .65 
 
-lr_bounds <- lr_bounds %>% as.data.frame()
-lr_bounds$origin <- 1:t
-colnames(lr_bounds) <- c('lower','upper','origin')
+lr_priors$premiums <- data$premiums %>% unique
 
-
-generations_summary <- merge(mack_lr[,1:5], lr_bounds, by = 'origin') 
-generations_summary$premiums <- data$premiums %>% unique
-
-options(digits = 2)
-generations_summary %>% mutate(d_to_d = dev_to_date,lower_ult = lower*premiums, upper_ult =upper*premiums,
-                               'low > lat' = lower*premiums> latest,prior_ult = (lower_ult + upper_ult)/2) %>% 
-  select(latest,ultimate,d_to_d, lr,lower,upper,lower_ult,upper_ult, prior_ult,'low > lat')
+options(digits = 8)
+lr_priors %>% mutate(d_to_d = mack_lr$dev_to_date,prior_ult = prior_lr*premiums,
+                               'prior > lat' = prior_ult > latest) %>% 
+  select(latest,ultimate,d_to_d, lr, prior_ult,prior_lr,'prior > lat')
 
 ### log-transform to feed the MCMC sampler
 
-options(digits = 4)
-lr_bounds <- lr_bounds %>% mutate(log_low = log(lower),log_up = log(upper))
+log_priors <- lr_priors %>% mutate(log_prior = log(prior_lr),log_mack_lr = log(lr)) %>% 
+  select(log_mack_lr,log_prior,lr_to_be_paid)
 
+### check lognormality assumptions
+
+mack_est <- MackChainLadder(tri, est.sigma = 'Mack')
+  mack_est$FullTriangle %>% apply(2,function(p) fitdistrplus::fitdist(p,distr = 'lnorm',method = 'mle'))
+
+### check variability of log-ultimate cost in data
+### look at data to assess a reasonable domain of variation
+alpha_start <- data.frame(log_prem = unique(data$premiums) %>% log )
+alpha_start$log_ult <- mack_lr %>% select(log_ult_mack = ultimate) %>% log
+alpha_start$log_ult_prior <- alpha_start$log_prem + log_priors$log_prior
+alpha_start$diff <- alpha_start[,3] - alpha_start[,1]
