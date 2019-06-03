@@ -66,18 +66,18 @@ mack_vs_ccl
 
 ###### ultimate View
 mack$Totals[4:6,1]
-(mack$Totals %>% rownames())[4:6,1]
-sim_recap(ultimate_view_reserve) %>% length
+
 ccl_compare <- cbind(sim_recap(ultimate_view_reserve),c(mack$Totals[4:6,1], rep(0,7)))
 colnames(ccl_compare) <- c('CCL','Mack')
 
 ccl_compare
 
-######
+###### 
+set.seed(1892)
 
 boot <- BootChainLadder(tri,10000, process.distr = 'od.pois')
 options(digits = 2)
-to.data.frame(boot$IBNR.ByOrigin)
+
 gen_boot <- do.call(rbind,lapply(1:10000, function(p) boot$IBNR.ByOrigin[1:11,1,p]))
 #gen_boot
 
