@@ -1,5 +1,5 @@
-###### Utility functions  ########
-###### Load in memory before computations ######
+####### Utility functions  ########
+####### Load in memory before computations #######
 
 #### 1 - function to rearrange parameters ####
 ###### I rearrange the parameters sets to create the matrices of Mu's and the vector of sigmas ########
@@ -161,7 +161,7 @@ expectation_function <- function(mu){
 }
 
 ##### lower triangle of incremental payments #####
-
+#### check a possible error, execute the function
 get_lower_incremental <- function(average_triangle,t,ndiag = 1){
   complete <- as.triangle(average_triangle,value = 'expectation', dev = 'dev', origin = 'orig')
   incr <- as.data.frame(cum2incr(complete))
