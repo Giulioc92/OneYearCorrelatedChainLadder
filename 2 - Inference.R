@@ -1,8 +1,6 @@
 ###### 2 - Inference ######
 ### need script 1 in memory
 
-### to change the extract in fit_fast
-
 #my_seed_old = 190758
 my_seed = 1462019
 tic()
@@ -17,7 +15,7 @@ print(fit, pars = c('mu','r_alpha','r_beta', 'a', 'lp__'), include = F)
 toc()
 print(fit, pars = 'logloss', include = F)
 
-############### 2802
+###############
 my_seed = 1462019
 tic()
 ccl_posterior <- stan_model(file = 'ccl_lognormal_lossratio6.stan')
