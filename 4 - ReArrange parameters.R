@@ -1,10 +1,10 @@
 ############# Rearrange parameters #################
 
-alpha <- as.data.frame(extract(fit_fast, 'alpha'))
-beta <- as.data.frame(extract(fit_fast, 'beta'))
-sig2 <- as.data.frame(extract(fit_fast, 'sig2'))
-rho <- as.data.frame(extract(fit_fast, 'rho'))
-logelr <- as.data.frame(extract(fit_fast, 'loglossratio'))
+alpha <- as.data.frame(extract(fit, 'alpha'))
+beta <- as.data.frame(extract(fit, 'beta'))
+sig2 <- as.data.frame(extract(fit, 'sig2'))
+rho <- as.data.frame(extract(fit, 'rho'))
+logelr <- as.data.frame(extract(fit, 'loglossratio'))
 
 
 
@@ -31,9 +31,10 @@ for(j in 1:dim(alpha)[1]){
 }
 
 #### I create the Mu 
+set.seed(2244)
 
 tic()
 arranged_sets <- lapply(1:length(sets), function(p) mu.sig.df.div.lr(sets[[p]],cdat))
 toc()
 
-
+ 
