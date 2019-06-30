@@ -4,7 +4,7 @@ ndiag <- 1
 options(digits = 5)
 # I collect just the rates
 discount <- rfr[1,2] %>% unlist %>% unname ## beware of tibbles!
-forward <- fwd_curve[1:(t-2),] %>% unlist ## needed fwd curve t - 2 periods ahead
+forward <- fwd_curve[1:(t-2),] %>% unlist ## needed fwd curve up to t - 2 terms ahead
 ######
 
 ###### 1 - I calculate the future BEST ESTIMATE for each parameters set #######
@@ -23,6 +23,7 @@ lower_incrementals <- lapply(expectations, function(p) get_lower_incremental(p,t
 
 future_best_estimates <- sapply(lower_incrementals, function(h) get_nextyear_be(h,forward))
 
+#future_best_estimates %>% sim_recap
 ###### I have the future best estimates to weigh with the posterior probabilities
 ###### obtained by the simulations
 
@@ -54,7 +55,7 @@ next_year_obligations <-function(arranged_sets,diagonal, ndiag, discount, future
   
   expected_be = weighted.mean(future_best_estimates,post_prob)
   
-  next_year_obligations <- (sample(paid_oneyear,1) + expected_be) / (1 + discount)
+  next_year_obligations <- sample(paid_oneyear,1) + (expected_be) / (1 + discount)
   
   return(next_year_obligations)
   
@@ -66,7 +67,9 @@ tic()
 trial_value <- next_year_obligations(arranged_sets,diagonal,1,discount,future_best_estimates)
 toc()
 
-set.seed(12052019)
+#set.seed(845921)
+set.seed(5289)
+
 c1 <- makeCluster(3)
 clusterExport(c1, "arranged_sets")
 clusterExport(c1, "next_year_obligations")
@@ -80,18 +83,14 @@ clusterExport(c1, 'diagonal')
 clusterExport(c1, 'future_best_estimates')
 clusterExport(c1, 't')
 tic()
-cc <- parSapply(c1,1:50,function(p) next_year_obligations(arranged_sets,diagonal,1,discount,future_best_estimates))
+cc <- parSapply(c1,1:10000,function(p) next_year_obligations(arranged_sets,diagonal,1,discount,future_best_estimates))
 toc()
 stopCluster(c1)
 #
 hist(cc, col ='orange')
 
-cc %>% sim_recap
+one_yr_ccl <- cc %>% sim_recap
 ccl_compare  
-
-data %>% select(origin, dev, cumulative)%>% as.triangle(dev ='dev',
-                           origin = 'origin', value = 'cumulative') %>%  
-  tweedieReserve(rereserving = T, nsim = 1000)
-
-
-  
+oneyr_on_total <- one_yr_ccl[3]/ccl_compare[3,1]
+ccl_scr <- (one_yr_ccl[10] - one_yr_ccl[1]) %>% unname
+ccl_scr/one_yr_ccl[10] %>%  unname
