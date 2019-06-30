@@ -9,6 +9,7 @@ rere <- data %>% select(origin, dev, cumulative)%>% as.triangle(dev ='dev',
   tweedieReserve(rereserving = T, nsim = 10000)
 rere$distr.res_1yr %>% sim_recap
 
+on_yr_rere_on_tot <- (rere$distr.res_1yr %>% sim_recap)[3]/ccl_compare[3,2]
 ###### Getting the Merz-Wuthrich variability
 ### Recalculate Mack Chain Ladder results
 Mack_CL <- data %>% select(origin, dev, cumulative)%>% as.triangle(dev ='dev',
@@ -65,6 +66,46 @@ mw_cv <- mw_se/be_cl
 
 ### I calculate the usp parameter I would obtain choosing Merz and Wuthrich
 ### and having 11 years of depth in my triangle
-sigmausp <- mw_cv *.74 + .09 * (1-.74)
-sigmausp
+sigma_usp <- mw_cv *.74 + .09 * (1-.74)
 
+### I fit a log normal distribution on the be and mw parameter
+##### method of moments log-normal ###à
+ln_sigma <- function(cv){
+  s <- sqrt(log(cv**2 + 1))
+  return(s)
+}
+
+ln_mu <- function(mean, sig){
+  mu <- log(mean) - (sig**2)/2
+  return(mu)
+}
+
+ln_mw_sig <- ln_sigma(mw_cv)
+ln_mw_mu <- ln_mu(be_cl,ln_sigma(mw_cv))
+#### check
+lognormal_mean(ln_mw_mu,ln_mw_sig**2) ### my function was to be feed with sigma squared
+
+### get vector of quantiles
+mapply(qlnorm,c(.75,.99,.995),ln_mw_mu,ln_mw_sig)
+### get skewness and kurtosis
+lnorm_skew <- function(m,s){
+  sk <- (exp(s**2) + 2)*(sqrt(exp(s**2)-1))
+  return(sk)
+}
+lnorm_kurt <- function(s){
+  k <- exp(4*s**2) + 2*exp(3*s**2) + 3*exp(2*s**2) - 6
+  return(k)
+}
+lnorm_skew(ln_mw_mu,ln_mw_sig)
+lnorm_kurt(ln_mw_sig) + 3
+
+mw_recap <- c(be_cl,mw_se,mw_se/be_cl,lnorm_skew(ln_mw_mu,ln_mw_sig),lnorm_kurt(ln_mw_sig) + 3,
+              mapply(qlnorm,c(.25,.5,.75,.99,.995),ln_mw_mu,ln_mw_sig))
+names(mw_recap) <- names(rere$distr.res_1yr %>% sim_recap)
+mw_recap
+mw_oneyr_on_total <- mw_recap[3]/ccl_compare[3,3]
+### compare scrs
+scr_rere <- ((rere$distr.res_1yr %>% sim_recap)[10] - be_cl) %>% unname
+scr_mw_fit <- qlnorm(.995,ln_mw_mu,ln_mw_sig) - be_cl
+scr_mw_fit/be_cl
+scr_rere/be_cl
