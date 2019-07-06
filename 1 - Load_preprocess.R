@@ -9,6 +9,8 @@ library(microbenchmark)
 library(moments)
 library(parallel)
 library(readxl)
+library(ggmcmc)
+
 ############# Import the data (a cumulative triangle)
 data <- read.table('mtpl_triangle.txt')
 
@@ -45,7 +47,7 @@ t <- cdat %>% select(dev) %>% max
 ####
 plot(tri,lattice = T)
 ata(tri)
-MackChainLadder(tri, est.sigma = 'Mack')
+Mack_CL <- MackChainLadder(tri, est.sigma = 'Mack')
 
 #### Mack implied loss ratio
 
@@ -166,3 +168,4 @@ alpha_start <- data.frame(log_prem = unique(data$premiums) %>% log )
 alpha_start$log_ult <- mack_lr %>% select(log_ult_mack = ultimate) %>% log
 alpha_start$log_ult_prior <- alpha_start$log_prem + log_priors$log_mu_prior
 alpha_start$diff <- alpha_start[,3] - alpha_start[,1]
+
