@@ -44,3 +44,5 @@ traceplot(fit_fast,'logelr11') %>% class
 extract(fit_fast,'loglossratio[11]') %>% unlist %>% unname %>% exp %>% hist
 extract(fit_fast,'loglossratio[10]') %>% unlist %>% unname %>% exp %>% hist
 ##############  Checks and tests ##################
+#### Traceplot, Rhat and effective sample size provided in the summaries
+#### of the sampling procedure
