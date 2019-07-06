@@ -92,5 +92,10 @@ hist(cc, col ='orange')
 one_yr_ccl <- cc %>% sim_recap
 ccl_compare  
 oneyr_on_total <- one_yr_ccl[3]/ccl_compare[3,1]
-ccl_scr <- (one_yr_ccl[10] - one_yr_ccl[1]) %>% unname
+#### get ccl implied best estimate
+be_distr <- lapply(expectations, function(p) get_lower_incremental(p,t,0) %>% select(value) %>% sum)
+mean_BE <- be_distr %>% unlist %>% mean
+
+ccl_scr <- (one_yr_ccl[10] - mean_BE) %>% unname
 ccl_scr/one_yr_ccl[10] %>%  unname
+
