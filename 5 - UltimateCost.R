@@ -98,39 +98,7 @@ colnames(ccl_compare) <- c('CCL','Bootstrap','Mack')
 
 ccl_compare
 
-##### ultimate view visualization
 
-R = unlist(ultimate_view_reserve)
- 
-
-ccl <- ggplot(as.data.frame(R), aes(x = R))+
-  geom_histogram(col = 'red', fill = 'firebrick1', alpha=.6,
-                 bins=80)+
-  scale_x_continuous('Reserve values') +
-  scale_y_continuous('Frequency')+
-  ggtitle('Total reserve distribution CCL') +
-  theme(plot.title = element_text(face='bold', size=10, hjust = .5),
-        axis.title.x = element_text(face="bold", colour="black", size = 10),
-        axis.title.y = element_text(face="bold", colour="black", size = 10))+
-  geom_vline(xintercept = mean(R), col = 'red')
-ccl
-
-#### bootstrap plot
-
-boot_vec <- unlist(boot$IBNR.Totals)
-
-boot_plot <- ggplot(as.data.frame(boot_vec), aes(x = boot_vec))+
-  geom_histogram(col = 'red', fill = 'firebrick1', alpha=.6,
-                 bins=70)+
-  scale_x_continuous('Reserve values') +
-  scale_y_continuous('Frequency')+
-  ggtitle('Total reserve distribution') +
-  theme(plot.title = element_text(face='bold', size=10, hjust = .5),
-        axis.title.x = element_text(face="bold", colour="black", size = 10),
-        axis.title.y = element_text(face="bold", colour="black", size = 10)) + 
-  geom_vline(xintercept = mean(boot_vec), col = 'red')
-
-boot_plot
 
 #### comparisons again
 
