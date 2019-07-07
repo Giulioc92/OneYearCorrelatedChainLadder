@@ -10,6 +10,8 @@ library(moments)
 library(parallel)
 library(readxl)
 library(ggmcmc)
+library(gridExtra)
+library(grid)
 
 ############# Import the data (a cumulative triangle)
 data <- read.table('mtpl_triangle.txt')
