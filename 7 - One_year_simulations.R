@@ -5,6 +5,7 @@ options(digits = 5)
 # I collect just the rates
 discount <- rfr[1,2] %>% unlist %>% unname ## beware of tibbles!
 forward <- fwd_curve[1:(t-2),] %>% unlist ## needed fwd curve up to t - 2 terms ahead
+spot <- rfr[1:t-1,2] %>% unlist %>% unname
 ######
 
 ###### 1 - I calculate the future BEST ESTIMATE for each parameters set #######
@@ -93,9 +94,16 @@ one_yr_ccl <- cc %>% sim_recap
 ccl_compare  
 oneyr_on_total <- one_yr_ccl[3]/ccl_compare[3,1]
 #### get ccl implied best estimate
-be_distr <- lapply(expectations, function(p) get_lower_incremental(p,t,0) %>% select(value) %>% sum)
-mean_BE <- be_distr %>% unlist %>% mean
+ube_list <- lapply(expectations, function(p) get_lower_incremental(p,t,0))
+#### the function get next year be works also for the BE, just by using
+#### a spot curve and ensuring to have the whole lower triangle
+discount_be <- sapply(ube_list, function(h) get_nextyear_be(h,spot))
 
-ccl_scr <- (one_yr_ccl[10] - mean_BE) %>% unname
+ccl_BE <- discount_be %>% mean
+
+ccl_scr <- (one_yr_ccl[10] - ccl_BE) %>% unname
 ccl_scr/one_yr_ccl[10] %>%  unname
 
+##### claims development result
+(ccl_BE - cc) %>% hist(col = 'orange')
+(ccl_BE - cc) %>% sim_recap()
