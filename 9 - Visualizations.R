@@ -1,6 +1,7 @@
 #### ccl distribution
 
 cc %>% sim_recap
+ccl_BE
 
 cc_df <- as.data.frame(cc)
 ccl1YR <- ggplot(cc_df, aes(x = cc_df[,1]))+
@@ -14,10 +15,10 @@ ccl1YR <- ggplot(cc_df, aes(x = cc_df[,1]))+
         axis.title.y = element_text(face="bold", colour="black", size = 10))+
   geom_vline(xintercept = mean(cc), col = 'navy', linetype = 8)+
   geom_vline(xintercept = quantile(cc,.995), col = 'navy', linetype = 8)+
-  scale_x_continuous(breaks = c(100000,150000,193266,250000,
+  scale_x_continuous(breaks = c(100000,150000,round(ccl_BE,0),250000,
                                 round(max(cc),2)),
                      labels = c(100000,150000,
-                                paste('E(CCL):',193266),paste('99.5%:',265995),
+                                paste('BE(CCL):',round(ccl_BE,0)),paste('99.5%:',265995),
                                 round(max(cc),0)),'Reserve Values' )
 
 ccl1YR
