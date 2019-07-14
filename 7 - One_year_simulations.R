@@ -102,7 +102,7 @@ discount_be <- sapply(ube_list, function(h) get_nextyear_be(h,spot))
 ccl_BE <- discount_be %>% mean
 
 ccl_scr <- (one_yr_ccl[10] - ccl_BE) %>% unname
-ccl_scr/one_yr_ccl[10] %>%  unname
+ccl_scr/ccl_BE %>%  unname
 
 ##### claims development result
 (ccl_BE - cc) %>% hist(col = 'orange')
