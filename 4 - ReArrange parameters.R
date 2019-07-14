@@ -6,10 +6,22 @@ sig2 <- as.data.frame(extract(fit, 'sig2'))
 rho <- as.data.frame(extract(fit, 'rho'))
 logelr <- as.data.frame(extract(fit, 'loglossratio'))
 
-
-
 colnames(rho) <- 'rho'
-#colnames(logelr) <- 'logelr'
+### plot the posterior distribution of rho
+ggplot(rho, aes(x=rho))+
+  geom_histogram(bins= 60, color = 'darkcyan', fill = 'cyan4',
+                 alpha = .7) + 
+  scale_x_continuous(expression(rho)) +
+  scale_y_continuous('Frequency')+
+  ggtitle(expression(paste(rho,' - ' ,'Posterior Distribution'))) +
+  theme(plot.title = element_text(face='bold', size=10, hjust = .5),
+        axis.title.x = element_text(face="bold", colour="black", size = 10),
+        axis.title.y = element_text(colour="black", size = 10)) +
+  geom_vline(xintercept = mean(rho %>% unlist), col = 'deepskyblue4', linetype = 8)
+#### add a dashed line
+rho %>% unlist %>% sim_recap
+
+
 ### logpremiums
 
 log_premiums <- cdat %>% select(logprem) %>% unique %>% unlist %>% unname 
@@ -38,3 +50,22 @@ arranged_sets <- lapply(1:length(sets), function(p) mu.sig.df.div.lr(sets[[p]],c
 toc()
 
  
+####### caterpillar plots
+detach('package:rstan', unload = T)
+library(coda)
+
+alpha_mcmc <- as.mcmc(alpha)
+beta_mcmc <- as.mcmc(beta)
+sigma_mcmc <- as.mcmc(sig2)
+elr_mcmc <- as.mcmc(exp(logelr))
+colnames(elr_mcmc) <- sapply(1:11,function(p) paste('elr',p,sep = ""))
+
+aa <- alpha_mcmc %>% ggs() %>% ggs_caterpillar()
+bb <- beta_mcmc %>% ggs() %>% ggs_caterpillar()
+ss <- sigma_mcmc %>% ggs() %>% ggs_caterpillar()
+ee <- elr_mcmc %>% ggs() %>% ggs_caterpillar()
+
+
+grid.arrange(grid.arrange(aa,ss,nrow=1),grid.arrange(bb,ee,nrow = 1), nrow = 2)
+
+#detach("package:coda",unload = T)
