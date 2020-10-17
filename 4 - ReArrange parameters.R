@@ -1,10 +1,12 @@
 ############# Rearrange parameters #################
 
-alpha <- as.data.frame(extract(fit, 'alpha'))
-beta <- as.data.frame(extract(fit, 'beta'))
-sig2 <- as.data.frame(extract(fit, 'sig2'))
-rho <- as.data.frame(extract(fit, 'rho'))
-logelr <- as.data.frame(extract(fit, 'loglossratio'))
+alpha <- as.data.frame(rstan::extract(fit, 'alpha'))
+beta <- as.data.frame(rstan::extract(fit, 'beta'))
+sig2 <- as.data.frame(rstan::extract(fit, 'sig2'))
+rho <- as.data.frame(rstan::extract(fit, 'rho'))
+logelr <- as.data.frame(rstan::extract(fit, 'loglossratio'))
+rho <- as.data.frame(rstan::extract(fit, 'rho'))
+
 
 colnames(rho) <- 'rho'
 ### plot the posterior distribution of rho
