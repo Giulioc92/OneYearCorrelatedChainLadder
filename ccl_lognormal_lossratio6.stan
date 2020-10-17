@@ -1,33 +1,33 @@
 //############## stan.model ######################
 data{
-  int <lower=1> len_data; // number of rows with data
-  int<lower=0, upper=1> origin1id[len_data]; 
-  int<lower=1> l_a;
-  real logprem[len_data]; 
-  real logloss[len_data];
-  int<lower=1> origin[len_data]; // origin period
-  int<lower=1> dev[len_data]; // development period
+  int <lower=1> ndata; // number of rows with data
+  int<lower=0, upper=1> origin1id[ndata]; 
+  int<lower=1> obs;
+  real logprem[ndata]; 
+  real logloss[ndata];
+  int<lower=1> origin[ndata]; // origin period
+  int<lower=1> dev[ndata]; // development period
 }
 
 transformed data{
-  int n_origin = max(origin);
-  int n_dev = max(dev);
+  int norigin = max(origin);
+  int ndev = max(dev);
 }
 parameters{
-  real <lower = -0.5,upper = 0.5> r_alpha[n_origin - 3];
-  real <lower=-3,upper = 0> r_beta[n_dev - 1];
-  real <lower=0.001> elr[n_origin];
+  real <lower = -0.5,upper = 0.5> ralpha[norigin - 3];
+  real <lower=-3,upper = 0> rbeta[ndev - 1];
+  real <lower=0.001> elr[norigin];
   //real<lower=0> a[n_dev];
   real<lower=-1, upper=1> rho;
-  real <lower=0,upper=1> a[n_dev];
+  real <lower=0,upper=1> a[ndev];
 }
 
 transformed parameters{
-  real mu[len_data];
-  real alpha[n_origin];
-  real beta[n_dev];
-  real sig2[n_dev];
-  real loglossratio[n_origin];
+  real mu[ndata];
+  real alpha[norigin];
+  real beta[ndev];
+  real sig2[ndev];
+  real loglossratio[norigin];
   //real sig[n_dev];
   //real <lower=-1, upper=1> rho;
   
@@ -40,28 +40,28 @@ transformed parameters{
   alpha[3] = 0;
   alpha[4] = 0;
   
-  for (i in 5:n_origin){
-    alpha[i] = r_alpha[i-3];
+  for (i in 5:norigin){
+    alpha[i] = ralpha[i-3];
   }
-  for (i in 1:(n_dev - 1)){
-    beta[i] = r_beta[i];
+  for (i in 1:(ndev - 1)){
+    beta[i] = rbeta[i];
   }
   
-  beta[n_dev] = 0;
+  beta[ndev] = 0;
   
-  for (i in 1:n_dev){
-    sig2[i] = sum(a[i:n_dev]);
+  for (i in 1:ndev){
+    sig2[i] = sum(a[i:ndev]);
   }
   
   loglossratio[1] = -0.2873;
   
-  for (i in 1:n_origin){
+  for (i in 1:norigin){
     
     loglossratio[i] = log(elr[i]);
   }
   
   mu[1] = logprem[1] + loglossratio[1] + beta[dev[1]];
-  for (i in 2:len_data){
+  for (i in 2:ndata){
     mu[i] = logprem[i] + loglossratio[origin[i]] + alpha[origin[i]] +  beta[dev[i]] +
       rho*(logloss[origin[i-1]] - mu[origin[i-1]]);
   }
@@ -86,14 +86,14 @@ model{
   elr[11] ~ lognormal(-0.4339, 0.08);
                      
                      
- for(i in 1:(n_origin - 4)){
- r_alpha[i] ~ uniform(-0.6,0.6);
+ for(i in 1:(norigin - 4)){
+ ralpha[i] ~ uniform(-0.6,0.6);
  }
- r_beta ~ uniform(-3,0);
+ rbeta ~ uniform(-3,0);
  a ~ beta(1,7);
  rho ~ uniform(-1,1);
                
- for (i in 1:(len_data)){
+ for (i in 1:(ndata)){
  logloss[i] ~ normal(mu[i], sqrt(sig2[dev[i]]));
  }
                     
