@@ -27,19 +27,19 @@ cdat <- data %>% mutate(logloss = log(cumulative),
 
 ## setup a stan datalist for STAN
 
-stan_data <- list(
-  len_data <- dim(cdat)[1],
+standata <- list(
+  ndata = dim(cdat)[1],
   logprem = cdat$logprem,
   logloss = cdat$logloss,
   origin = cdat$origin,
   dev = cdat$dev,
-  l_a = (max(cdat$origin) * (max(cdat$origin)+1))/2,
+  obs = (max(cdat$origin) * (max(cdat$origin)+1))/2,
   origin1id = cdat$origin1id
 )
 
 ### visualize the list 
 
-stan_data
+standata
 
 ### 1.1 explore the triangle
 
