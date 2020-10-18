@@ -71,3 +71,10 @@ ee <- elr_mcmc %>% ggs() %>% ggs_caterpillar()
 grid.arrange(grid.arrange(aa,ss,nrow=1),grid.arrange(bb,ee,nrow = 1), nrow = 2)
 
 #detach("package:coda",unload = T)
+
+########## put here some code to extract the samples
+########## in order not to have to run the mcmc procedure all the time
+
+bind_cols(alpha,beta,sig2,rho,logelr) %>% write.csv("samples.csv")
+save(fit, file = "stan_model_final.rda")
+

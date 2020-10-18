@@ -109,3 +109,6 @@ scr_rere <- ((rere$distr.res_1yr %>% sim_recap)[10] - be_cl) %>% unname
 scr_mw_fit <- qlnorm(.995,ln_mw_mu,ln_mw_sig) - be_cl
 scr_mw_fit/be_cl
 scr_rere/be_cl
+
+
+
