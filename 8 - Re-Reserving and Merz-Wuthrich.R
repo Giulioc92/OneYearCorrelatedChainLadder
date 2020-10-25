@@ -9,6 +9,8 @@ rere <- data %>% select(origin, dev, sim_cumulative) %>%
   tweedieReserve(rereserving = T, nsim = 10000)
 rere$distr.res_1yr %>% sim_recap
 
+max(rere$distr.res_1yr)
+
 one_yr_rere_on_tot <- (rere$distr.res_1yr %>% sim_recap)[3]/ccl_compare[3,2]
 #one_yr_rere_on_tot_alt <- (rere$distr.res_1yr %>% sim_recap)[2]/ccl_compare[2,2]
 ###### Getting the Merz-Wuthrich variability

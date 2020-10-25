@@ -65,11 +65,11 @@ next_year_obligations <-function(arranged_sets,diagonal, ndiag, discount, future
 ##### I simulate a value #####
 
 tic()
-trial_value <- next_year_obligations(arranged_sets,diagonal,1,discount,future_best_estimates)
+test_value <- next_year_obligations(arranged_sets,diagonal,1,discount,future_best_estimates)
 toc()
 
 #set.seed(845921)
-set.seed(5289)
+set.seed(101)
 
 c1 <- makeCluster(3)
 clusterExport(c1, "arranged_sets")
@@ -91,8 +91,10 @@ stopCluster(c1)
 hist(cc, col ='orange')
 
 one_yr_ccl <- cc %>% sim_recap
-ccl_compare  
+ccl_compare
+max(cc)
 oneyr_on_total <- one_yr_ccl[3]/ccl_compare[3,1]
+oneyr_on_total_alt <- one_yr_ccl[2]/ccl_compare[2,1]
 #### get ccl implied best estimate
 ube_list <- lapply(expectations, function(p) get_lower_incremental(p,t,0))
 #### the function get next year be works also for the BE, just by using
@@ -107,5 +109,5 @@ ccl_scr/ccl_BE %>%  unname
 ##### claims development result
 (ccl_BE - cc) %>% hist(col = 'orange')
 (ccl_BE - cc) %>% sim_recap()
-#write.csv(cc,'one_yr_simulations.csv')
-
+write.csv(cc,'one_yr_simulations.csv')
+save(cc,file = "oneyr_sim.rda")

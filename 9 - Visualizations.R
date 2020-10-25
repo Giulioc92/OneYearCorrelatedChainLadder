@@ -66,4 +66,3 @@ boot_plot <- ggplot(as.data.frame(boot_vec), aes(x = boot_vec))+
 boot_plot
 
 
-
