@@ -13,15 +13,17 @@ library(ggmcmc)
 library(gridExtra)
 library(grid)
 
+options(scipen = 999, digits = 5) 
+
 ############# Import the data (a cumulative triangle)
-data <- read.table('mtpl_triangle.txt')
+data <- read.table('simulated_triangle.txt')
 
 ############# Manipulation
 ## log transformation of cumulative and premiums
 ## flagging with 1 the first accident year
 
-cdat <- data %>% mutate(logloss = log(cumulative),
-                        logprem = log(premiums), 
+cdat <- data %>% mutate(logloss = log(sim_cumulative),
+                        logprem = log(premium), 
                         origin1id = ifelse(origin == 1,0,1)) %>%
   select(origin,dev,logloss,logprem, origin1id)
 
@@ -43,7 +45,9 @@ standata
 
 ### 1.1 explore the triangle
 
-tri <- data %>% mutate(value = cumulative) %>% as.triangle(origin = 'origin',dev = 'dev',value = 'value')
+tri <- data %>% mutate(value = sim_cumulative) %>% as.triangle(origin = 'origin',dev = 'dev',value = 'value')
+
+tri %>% cum2incr
 
 t <- cdat %>% select(dev) %>% max
 ####
@@ -54,7 +58,7 @@ Mack_CL <- MackChainLadder(tri, est.sigma = 'Mack')
 #### Mack implied loss ratio
 
 mack <- MackChainLadder(tri, est.sigma = 'Mack') %>% summary
-mack_lr <- (mack$ByOrigin$Ultimate / unique(data$premiums)) %>% cbind(origin = 1:t) %>%  as.data.frame
+mack_lr <- (mack$ByOrigin$Ultimate / unique(data$premium)) %>% cbind(origin = 1:t) %>%  as.data.frame
 colnames(mack_lr)[1] <- 'lr'
 #### get some kind of credibility of Mack LR
 options(digits = 8)
@@ -64,7 +68,7 @@ mack_lr$latest <- mack$ByOrigin$Latest %>% unlist
 mack_lr$ultimate <- mack$ByOrigin$Ultimate %>% unlist
 mack_lr$loglr <- log(mack_lr$lr)
 mack_lr$to_pay <- 1 - mack_lr$dev_to_date
-mack_lr$lr_paid <- mack_lr$latest / unique(data$premiums)
+mack_lr$lr_paid <- mack_lr$latest / unique(data$premium)
 mack_lr
 
 #### fit a log normal distribution on the loss ratio
@@ -118,27 +122,24 @@ lr_priors[3,7] <- lr_priors[3,5]
 
 lr_priors[4,7] <- .731
 lr_priors[5,7] <- .806
-lr_priors[6,7] <- .851  ### lr_priors[6,5] * (1.02)
+lr_priors[6,7] <- .85  ### lr_priors[6,5] * (1.02)
 lr_priors[7,7] <- .685  ### lr_priors[7,5] * (1.02)
 lr_priors[8,7] <- .787
 lr_priors[9,7] <- .705
 
 #### particular care for the two youngest generations
-#### implied loss ratio are lower than long-term loss ratio of the portfolio
-#### I converge to that value
+#### I set a higher -a priori- loss ratio
 
-lr_priors[10,7] <- .743
+lr_priors[10,7] <- .72
 
-### the last loss ratio in particular seems not to
-### be in line with that ot immediately preceding generations:
-### great uncertainty and considerably lower loss ratios
-### make us choose a wider prior, centered on higher values than the mack ones
-lr_priors[11,7] <- .65 
+### the younger the generation, the more the uncertainty regarding the loss ratio
+### so we choose a wider prior, centered on higher values than the mack ones
+lr_priors[11,7] <- .72 
 
-lr_priors$premiums <- data$premiums %>% unique
+lr_priors$premium <- data$premium %>% unique
 
 options(digits = 8)
-lr_priors %>% mutate(d_to_d = mack_lr$dev_to_date,prior_ult = prior_lr*premiums,
+lr_priors %>% mutate(d_to_d = mack_lr$dev_to_date,prior_ult = prior_lr*premium,
                                'prior > lat' = prior_ult > latest) %>% 
   select(latest,ultimate,d_to_d, lr, prior_ult,prior_lr,'prior > lat')
 
@@ -148,9 +149,9 @@ lr_priors %>% mutate(d_to_d = mack_lr$dev_to_date,prior_ult = prior_lr*premiums,
 
 sapply(lr_priors$prior_lr,function(p) find_the_mu(p,sigma_emp)) %>% unname
 
-log_priors <- lr_priors %>% mutate(log_mu_prior = find_the_mu(prior_lr,sigma_emp),
-                                   log_mack_lr = find_the_mu(lr,sigma_emp),to_be_perc = (lr_to_be_paid)/(lr_to_be_paid + lr_paid)) %>% 
-  select(lr,log_mack_lr,log_mu_prior,lr_paid,lr_to_be_paid,to_be_perc,prior_lr)
+log_priors <- lr_priors %>% mutate(log_mu_lr_prior = find_the_mu(prior_lr,sigma_emp),
+                                   log_mu_mack_lr = find_the_mu(lr,sigma_emp),to_be_perc = (lr_to_be_paid)/(lr_to_be_paid + lr_paid)) %>% 
+  select(lr,log_mu_mack_lr,log_mu_lr_prior,lr_paid,lr_to_be_paid,to_be_perc,prior_lr)
 
 ### check lognormality assumptions
 # old
@@ -166,8 +167,11 @@ log_priors <- lr_priors %>% mutate(log_mu_prior = find_the_mu(prior_lr,sigma_emp
 ### check variability of log-ultimate cost in data
 ### look at data to assess a reasonable domain of variation
 
-alpha_start <- data.frame(log_prem = unique(data$premiums) %>% log )
+alpha_start <- data.frame(log_prem = unique(data$premium) %>% log )
 alpha_start$log_ult <- mack_lr %>% select(log_ult_mack = ultimate) %>% log
 alpha_start$log_ult_prior <- alpha_start$log_prem + log_priors$log_mu_prior
 alpha_start$diff <- alpha_start[,3] - alpha_start[,1]
 
+###  print alpha_start
+
+alpha_start
