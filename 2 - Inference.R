@@ -17,7 +17,6 @@ ccl_posterior <- stan_model(file = '1b - CCL_log_normalv1.stan')
 #                 control = list(adapt_delta=.997, max_treedepth = 12)
 #                 )
 # ##################
-fit
  
 fit <- sampling(ccl_posterior, data = stan_data, seed = my_seed, warmup = 2500, init = 'random', iter = 27500,
                 thin = 10, chains = 4, cores = 3, control = list(adapt_delta=.998, max_treedepth = 13))
