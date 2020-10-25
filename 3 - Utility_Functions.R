@@ -187,10 +187,10 @@ get_nextyear_be <- function(complete,forward){
 sim_recap <- function(vector){
   recap <- c(mean(vector),sd(vector), sd(vector)/mean(vector), skewness(vector),
              kurtosis(vector),quantile(vector,.25),quantile(vector,.5),
-              quantile(vector,.75),quantile(vector,.99),quantile(vector,.995) ) 
+              quantile(vector,.75),quantile(vector,.99),quantile(vector,.995)) 
   names(recap) <- c('Mean','Sd','Vco','Skewness','Kurtosis','1st quartile',
                     'Median','3rd quartile','99% quantile','99.5% quantile')
-  options(scipen = 999, digits = 3)
+  options(scipen = 999, digits = 5)
   return(recap)
 }
 

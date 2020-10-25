@@ -101,5 +101,9 @@ ccl_compare
 
 
 #### comparisons again
-
+options(digits = 5)
 ccl_compare
+
+#### compare the maximum value of the two simulated distributions
+ultimate_view_reserve %>% max
+boot$IBNR.Totals %>% max
