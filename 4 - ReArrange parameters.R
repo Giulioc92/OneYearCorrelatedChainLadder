@@ -60,13 +60,12 @@ alpha_mcmc <- as.mcmc(alpha)
 beta_mcmc <- as.mcmc(beta)
 sigma_mcmc <- as.mcmc(sig2)
 elr_mcmc <- as.mcmc(exp(logelr))
-colnames(elr_mcmc) <- sapply(1:11,function(p) paste('elr',p,sep = ""))
+colnames(elr_mcmc) <- sapply(1:11,function(p) paste('Lr',p,sep = " "))
 
 aa <- alpha_mcmc %>% ggs() %>% ggs_caterpillar()
 bb <- beta_mcmc %>% ggs() %>% ggs_caterpillar()
 ss <- sigma_mcmc %>% ggs() %>% ggs_caterpillar()
 ee <- elr_mcmc %>% ggs() %>% ggs_caterpillar()
-
 
 grid.arrange(grid.arrange(aa,ss,nrow=1),grid.arrange(bb,ee,nrow = 1), nrow = 2)
 
@@ -76,5 +75,6 @@ grid.arrange(grid.arrange(aa,ss,nrow=1),grid.arrange(bb,ee,nrow = 1), nrow = 2)
 ########## in order not to have to run the mcmc procedure all the time
 
 bind_cols(alpha,beta,sig2,rho,logelr) %>% write.csv("samples.csv")
-save(fit, file = "stan_model_final.rda")
+
+#save(fit, file = "stan_model_final.rda")
 
