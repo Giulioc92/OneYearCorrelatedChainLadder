@@ -45,6 +45,12 @@ rstan::traceplot(fit,'elr')
 ### the posterior distribution
 ###################
 
+####### export the posterior distribution ########
+save(fit, file = "posterior_distribution.rda")
+
+
+
+
 # traceplot(fit_fast, 'alpha')
 # traceplot(fit_fast, 'beta')
 # traceplot(fit_fast, 'sig2')
