@@ -2,25 +2,25 @@
 ### need script 1 in memory
 
 #my_seed_old = 190758
-my_seed = 1462019
-tic()
+my_seed = 2510
+#tic()
 ########### fit the stan model
-ccl_posterior <- stan_model(file = 'ccl_lognormal_lossratio6.stan')
+ccl_posterior <- stan_model(file = '1b - CCL_log_normalv1.stan')
 ########### get 10000 posterior sample  ### called here fit_fast for convenienc
 
-# ##### commented code - fast test for running the procedure
+# ##### commented code - fast test for running the procedure - not so fast here
 # fit <- sampling(ccl_posterior, data = standata,
 #                 seed = my_seed,
-#                 warmup = 1000,
-#                 init = 'random', iter = 11000,
-#                 thin = 4, chains = 4, cores = 3,
-#                 control = list(adapt_delta=.995, max_treedepth = 10)
+#                 warmup = 2500,
+#                 init = 'random', iter = 27500,
+#                 thin = 10, chains = 4, cores = 3,
+#                 control = list(adapt_delta=.997, max_treedepth = 12)
 #                 )
 # ##################
-
-
+fit
+ 
 fit <- sampling(ccl_posterior, data = stan_data, seed = my_seed, warmup = 2500, init = 'random', iter = 27500,
-                thin = 10, chains = 4, cores = 3, control = list(adapt_delta=.98, max_treedepth = 13))
+                thin = 10, chains = 4, cores = 3, control = list(adapt_delta=.998, max_treedepth = 13))
 
 print(fit, pars = c('mu','r_alpha','r_beta', 'a', 'lp__'), include = F)
 toc()

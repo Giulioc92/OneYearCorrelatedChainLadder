@@ -4,12 +4,13 @@
 
 #set.seed(1923)
 set.seed(9062019)
-rere <- data %>% select(origin, dev, cumulative)%>% as.triangle(dev ='dev',
-                                                                origin = 'origin', value = 'cumulative') %>%  
+rere <- data %>% select(origin, dev, sim_cumulative) %>% 
+  as.triangle(dev ='dev',origin = 'origin', value = 'sim_cumulative') %>%  
   tweedieReserve(rereserving = T, nsim = 10000)
 rere$distr.res_1yr %>% sim_recap
 
 on_yr_rere_on_tot <- (rere$distr.res_1yr %>% sim_recap)[3]/ccl_compare[3,2]
+#one_yr_rere_on_tot_alt <- (rere$distr.res_1yr %>% sim_recap)[2]/ccl_compare[2,2]
 ###### Getting the Merz-Wuthrich variability
 ### Recalculate Mack Chain Ladder results
 Mack_CL <- data %>% select(origin, dev, cumulative)%>% as.triangle(dev ='dev',
@@ -24,6 +25,10 @@ full_triangle <- Mack_CL$FullTriangle %>% cum2incr
 
 #### rfr should be a vector
 risk_free <- rfr[,2] %>% unlist %>% unname
+
+###### 1 period discount parameter
+discount <- rfr[1,2] %>% pull
+
 best_estimate <- function(full_triangle,risk_free){
   
   #### utilities
@@ -104,6 +109,9 @@ mw_recap <- c(be_cl,mw_se,mw_se/be_cl,lnorm_skew(ln_mw_mu,ln_mw_sig),lnorm_kurt(
 names(mw_recap) <- names(rere$distr.res_1yr %>% sim_recap)
 mw_recap
 mw_oneyr_on_total <- mw_recap[3]/ccl_compare[3,3]
+
+#mw_oneyr_on_total_alt <- mw_recap[2]/ccl_compare[2,3]
+
 ### compare scrs
 scr_rere <- ((rere$distr.res_1yr %>% sim_recap)[10] - be_cl) %>% unname
 scr_mw_fit <- qlnorm(.995,ln_mw_mu,ln_mw_sig) - be_cl
