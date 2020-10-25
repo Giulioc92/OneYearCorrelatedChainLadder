@@ -1,5 +1,6 @@
 //############## stan.model ######################
 data{
+  
   int <lower=1> ndata; // number of rows with data
   int<lower=0, upper=1> origin1id[ndata]; 
   int<lower=1> obs;
