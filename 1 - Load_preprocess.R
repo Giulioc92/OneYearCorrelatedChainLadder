@@ -16,7 +16,7 @@ library(grid)
 options(scipen = 999, digits = 5) 
 
 ############# Import the data (a cumulative triangle)
-data <- read.table('simulated_triangle.txt')
+data <- read.table('simulated_dataset.txt')
 
 ############# Manipulation
 ## log transformation of cumulative and premiums
@@ -134,7 +134,7 @@ lr_priors[10,7] <- .72
 
 ### the younger the generation, the more the uncertainty regarding the loss ratio
 ### so we choose a wider prior, centered on higher values than the mack ones
-lr_priors[11,7] <- .72 
+lr_priors[11,7] <- .74 
 
 lr_priors$premium <- data$premium %>% unique
 

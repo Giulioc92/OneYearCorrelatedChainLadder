@@ -109,5 +109,5 @@ ccl_scr/ccl_BE %>%  unname
 ##### claims development result
 (ccl_BE - cc) %>% hist(col = 'orange')
 (ccl_BE - cc) %>% sim_recap()
-write.csv(cc,'one_yr_simulations.csv')
-save(cc,file = "oneyr_sim.rda")
+# write.csv(cc,'one_year_simulations.csv')
+# save(cc,file = "one_year_simulations.rda")

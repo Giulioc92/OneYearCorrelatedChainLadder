@@ -5,7 +5,7 @@
 my_seed = 2510
 #tic()
 ########### fit the stan model
-ccl_posterior <- stan_model(file = '1b - CCL_log_normalv1.stan')
+ccl_posterior <- stan_model(file = '1b - CCL_log_normalv2.stan')
 ########### get 10000 posterior sample  ### called here fit_fast for convenienc
 
 # ##### commented code - fast test for running the procedure - not so fast here
@@ -46,7 +46,7 @@ rstan::traceplot(fit,'elr')
 ###################
 
 ####### export the posterior distribution ########
-save(fit, file = "posterior_distribution.rda")
+save(fit, file = "sampled_posterior_distribution.rda")
 
 
 

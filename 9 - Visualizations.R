@@ -18,7 +18,7 @@ ccl1YR <- ggplot(cc_df, aes(x = cc_df[,1]))+
   scale_x_continuous(breaks = c(100000,150000,round(ccl_BE,0),250000,
                                 round(max(cc),2)),
                      labels = c(100000,150000,
-                                paste('BE(CCL):',round(ccl_BE,0)),paste('99.5%:',265995),
+                                paste('BE(CCL):',round(ccl_BE,0)),paste('99.5%:',259668),
                                 round(max(cc),0)),'Reserve Values' )
 
 ccl1YR
@@ -43,10 +43,10 @@ ccl <- ggplot(as.data.frame(R), aes(x = R))+
   scale_x_continuous(breaks = c(100000,150000,196340,250000,
                                 300000,350000),
                      labels = c(100000,150000,
-                                paste('E(CCL):',196340),250000,300000,
+                                paste('E(CCL):',205908),250000,300000,
                                 350000), 'Reserve Values')
 ccl
-
+ultimate_view_reserve %>% sim_recap
 
 #### bootstrap plot
 
