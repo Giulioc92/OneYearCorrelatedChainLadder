@@ -87,8 +87,8 @@ ln_mu <- function(mean, sig){
   return(mu)
 }
 
-ln_mw_sig <- ln_sigma(mw_cv)
-ln_mw_mu <- ln_mu(be_cl,ln_sigma(mw_cv))
+ln_mw_sig <- ln_sigma(sigma_usp)
+ln_mw_mu <- ln_mu(be_cl,ln_sigma(sigma_usp))
 #### check
 lognormal_mean(ln_mw_mu,ln_mw_sig**2) ### my function was to be feed with sigma squared
 
@@ -106,7 +106,7 @@ lnorm_kurt <- function(s){
 lnorm_skew(ln_mw_mu,ln_mw_sig)
 lnorm_kurt(ln_mw_sig) + 3
 
-mw_recap <- c(be_cl,mw_se,mw_se/be_cl,lnorm_skew(ln_mw_mu,ln_mw_sig),lnorm_kurt(ln_mw_sig) + 3,
+mw_recap <- c(be_cl,mw_se,sigma_usp,lnorm_skew(ln_mw_mu,ln_mw_sig),lnorm_kurt(ln_mw_sig) + 3,
               mapply(qlnorm,c(.25,.5,.75,.99,.995),ln_mw_mu,ln_mw_sig))
 names(mw_recap) <- names(rere$distr.res_1yr %>% sim_recap)
 mw_recap

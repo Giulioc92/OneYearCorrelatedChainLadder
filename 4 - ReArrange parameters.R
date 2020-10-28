@@ -9,18 +9,6 @@ rho <- as.data.frame(rstan::extract(fit, 'rho'))
 
 
 colnames(rho) <- 'rho'
-### plot the posterior distribution of rho
-ggplot(rho, aes(x=rho))+
-  geom_histogram(bins= 60, color = 'darkcyan', fill = 'cyan4',
-                 alpha = .7) + 
-  scale_x_continuous(expression(rho)) +
-  scale_y_continuous('Frequency')+
-  ggtitle(expression(paste(rho,' - ' ,'Posterior Distribution'))) +
-  theme(plot.title = element_text(face='bold', size=10, hjust = .5),
-        axis.title.x = element_text(face="bold", colour="black", size = 10),
-        axis.title.y = element_text(colour="black", size = 10)) +
-  geom_vline(xintercept = mean(rho %>% unlist), col = 'deepskyblue4', linetype = 8)
-#### add a dashed line
 rho %>% unlist %>% sim_recap
 
 
@@ -60,7 +48,7 @@ alpha_mcmc <- as.mcmc(alpha)
 beta_mcmc <- as.mcmc(beta)
 sigma_mcmc <- as.mcmc(sig2)
 elr_mcmc <- as.mcmc(exp(logelr))
-colnames(elr_mcmc) <- sapply(1:11,function(p) paste('Lr',p,sep = " "))
+colnames(elr_mcmc) <- sapply(1:11,function(p) paste('elr',p,sep = " "))
 
 aa <- alpha_mcmc %>% ggs() %>% ggs_caterpillar()
 bb <- beta_mcmc %>% ggs() %>% ggs_caterpillar()

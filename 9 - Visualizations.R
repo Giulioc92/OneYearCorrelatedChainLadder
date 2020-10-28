@@ -40,10 +40,10 @@ ccl <- ggplot(as.data.frame(R), aes(x = R))+
         axis.title.x = element_text(face="bold", colour="black", size = 10),
         axis.title.y = element_text(face="bold", colour="black", size = 10))+
   geom_vline(xintercept = mean(R), col = 'red', linetype = 8) +
-  scale_x_continuous(breaks = c(100000,150000,196340,250000,
+  scale_x_continuous(breaks = c(100000,150000,205890,250000,
                                 300000,350000),
                      labels = c(100000,150000,
-                                paste('E(CCL):',205908),250000,300000,
+                                paste('E(CCL):',205890),250000,300000,
                                 350000), 'Reserve Values')
 ccl
 ultimate_view_reserve %>% sim_recap
@@ -65,4 +65,18 @@ boot_plot <- ggplot(as.data.frame(boot_vec), aes(x = boot_vec))+
 
 boot_plot
 
+############# rho
 
+### plot the posterior distribution of rho
+rho_chart <- ggplot(rho, aes(x=rho))+
+  geom_histogram(bins= 60, color = 'darkcyan', fill = 'cyan4',
+                 alpha = .7) + 
+  scale_x_continuous(expression(rho)) +
+  scale_y_continuous('Frequency')+
+  ggtitle(expression(paste(rho,' - ' ,'Posterior Distribution'))) +
+  theme(plot.title = element_text(face='bold', size=10, hjust = .5),
+        axis.title.x = element_text(face="bold", colour="black", size = 10),
+        axis.title.y = element_text(colour="black", size = 10)) +
+  geom_vline(xintercept = mean(rho %>% unlist), col = 'deepskyblue4', linetype = 8)
+
+rho_chart

@@ -21,7 +21,8 @@ tic()
 fit <- sampling(ccl_posterior, data = standata, seed = my_seed, warmup = 2500, init = 'random', iter = 27500,
                 thin = 10, chains = 4, cores = 3, control = list(adapt_delta=.998, max_treedepth = 13))
 
-print(fit, pars = c('mu','r_alpha','r_beta', 'a', 'lp__'), include = F)
+#print(fit, pars = c('mu','r_alpha','r_beta', 'a', 'lp__'), include = F)
+print(fit,pars = c('alpha','beta','sig2','elr','rho'))
 toc()
 print(fit, pars = 'logloss', include = F)
 

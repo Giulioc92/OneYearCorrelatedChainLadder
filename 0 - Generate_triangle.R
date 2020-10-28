@@ -14,3 +14,4 @@ simulate_triangle(imported) %>%
   as.triangle(value = ".",dev = 'dev',origin = 'origin') %>%
   MackChainLadder() %>% summary
 
+#### the generated triangle under this seed is exactly the one used for the calculations

@@ -1,5 +1,5 @@
 ########## Simulating the ultimate cost #############
-
+set.seed(2710)
 ### triangle dimension variables t x t triangle
 
 t <- cdat %>% select(dev) %>% max
